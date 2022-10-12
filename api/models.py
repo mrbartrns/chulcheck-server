@@ -12,3 +12,6 @@ class Attendence(models.Model):
         related_name="attendence_datas",
     )
     timestamp = models.DateTimeField(verbose_name="timestamp", auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} at {self.timestamp}"
