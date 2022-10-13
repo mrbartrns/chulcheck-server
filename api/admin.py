@@ -9,4 +9,4 @@ class AttendenceAdmin(admin.ModelAdmin):
     list_display_links = ["id", "user", "timestamp"]
 
 
-admin.site.register(Attendence, AttendenceAdmin)
+admin.site.register(Attendance, AttendenceAdmin)
