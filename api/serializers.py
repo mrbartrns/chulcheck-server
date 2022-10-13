@@ -4,5 +4,5 @@ from .models import *
 
 class AttendenceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Attendence
-        fields = {"id", "user", "timestamp"}
+        model = Attendance
+        fields = ("id", "user", "timestamp")
