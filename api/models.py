@@ -9,7 +9,7 @@ class Attendance(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name="user",
-        related_name="attendence_datas",
+        related_name="attendance_data",
     )
     timestamp = models.DateTimeField(verbose_name="timestamp", auto_now_add=True)
 
