@@ -9,6 +9,7 @@ class MinimumMaximumLengthValidator:
     def validate_minimum_maximum_length(self, username):
         if len(username) < self.min_length:
             raise ValidationError(f"username must be longer than {self.min_length}.")
+
         if self.max_length and len(username) > self.max_length:
             raise ValidationError(
                 _(
