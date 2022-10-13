@@ -1,9 +1,8 @@
-from dataclasses import field
 from rest_framework import serializers
-from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from django.core import exceptions
+from django.core.exceptions import ValidationError
+from .validations import validate_username
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -18,14 +17,23 @@ class UserSerializer(serializers.ModelSerializer):
         )
         return user
 
+    # TODO: error 코드 전달하기
     def validate(self, data):
         user = User(**data)
+        username = data.get("username")
         password = data.get("password")
         errors = {}
 
         try:
+            validate_username(username=username)
+        except ValidationError as e:
+            errors["username"] = list(e)
+
+        try:
             validate_password(password=password, user=user)
-        except exceptions.ValidationError as e:
+        except ValidationError as e:
             errors["password"] = list(e.messages)
 
-        return super(UserSerializer, self).validate(data)
+        if errors:
+            raise serializers.ValidationError(errors)
+        return data
