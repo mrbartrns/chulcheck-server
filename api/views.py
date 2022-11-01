@@ -1,3 +1,4 @@
+from email.policy import HTTP
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -22,10 +23,26 @@ class AttendanceView(APIView):
     authentication_classes = [BearerTokenAuthentication]
     serializer_class = AttendenceSerializer
 
-    def get(self, request):
+    def get(self, request, month):
         user = request.user
+
+        if month:
+            if month < 0 or month > 12:
+                return Response(
+                    {
+                        "message": "month must be greater than 0 and smaller than or equal to 12."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            data = Attendance.objects.filter(timestamp__month=month, user=user)
+            return Response(
+                self.serializer_class(data, many=True).data, status=status.HTTP_200_OK
+            )
+
         data = Attendance.objects.filter(user=user)
-        return Response(self.serializer_class(data, many=True).data, status=200)
+        return Response(
+            self.serializer_class(data, many=True).data, status=status.HTTP_200_OK
+        )
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
