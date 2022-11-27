@@ -10,3 +10,13 @@ class AttendenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
         fields = ("id", "user", "timestamp")
+
+
+class OrganizationSerializer(serializers.ModelSerializer):
+
+    leader = UserSerializer(read_only=True)
+    members = UserSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Organization
+        fields = ("id", "leader", "members", "created_at", "updated_at")
