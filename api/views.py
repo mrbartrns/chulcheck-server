@@ -1,12 +1,12 @@
-from email.policy import HTTP
-from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
 from authentication.TokenAuthentication import BearerTokenAuthentication
-from .serializers import AttendenceSerializer
-from .models import Attendance
+from .serializers import AttendenceSerializer, OrganizationSerializer
+from .models import Attendance, Organization
 
 
 # Create your views here.
@@ -52,3 +52,19 @@ class AttendanceView(APIView):
                 self.serializer_class(data).data, status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrganizationView(APIView):
+    """
+    Organization 관련 view
+    TODO - post 시 add user 및 remove user 추가
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    serializer_class = OrganizationSerializer
+
+    def get(self, request, id):
+        serializer = self.serializer_class
+        data = get_object_or_404(Organization, id=id)
+        return Response(serializer(data).data, status=status.HTTP_200_OK)
