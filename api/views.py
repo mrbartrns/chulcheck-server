@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -10,6 +11,9 @@ from .models import Attendance, Organization
 
 
 # Create your views here.
+class APIPagination(PageNumberPagination):
+    page_query_param = "p"
+    page_size = 10
 
 
 class AttendanceView(APIView):
@@ -54,16 +58,20 @@ class AttendanceView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class OrganizationListView(APIView):
+class OrganizationListView(APIView, APIPagination):
     permission_classes = [AllowAny]
     authentication_classes = []
     serializer_class = OrganizationSerializer
 
     def get(self, request):
         serializer = self.serializer_class
-        data = get_list_or_404(Organization)
 
-        return Response(serializer(data, many=True).data, status=status.HTTP_200_OK)
+        data = get_list_or_404(Organization)
+        page = self.paginate_queryset(data, request, view=self)
+
+        response = self.get_paginated_response(serializer(page, many=True).data)
+
+        return response
 
 
 class OrganizationView(APIView):
