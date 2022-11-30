@@ -22,10 +22,10 @@ class Attendance(models.Model):
 
 class Organization(models.Model):
     name = models.CharField(verbose_name="name", max_length=25)
-    leader = models.OneToOneField(
+    leader = models.ForeignKey(
         User, verbose_name="leader", on_delete=models.SET_NULL, null=True
     )
-    members = models.ManyToManyField(User, related_name="organizations")
+    members = models.ManyToManyField(User, related_name="organizations", blank=True)
     created_at = models.DateTimeField(verbose_name="created_at", auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name="updated_at", auto_now=True)
 

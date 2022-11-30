@@ -59,8 +59,8 @@ class AttendanceView(APIView):
 
 
 class OrganizationListView(APIView, APIPagination):
-    permission_classes = [AllowAny]
-    authentication_classes = []
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BearerTokenAuthentication]
     serializer_class = OrganizationSerializer
 
     def get(self, request):
@@ -72,6 +72,17 @@ class OrganizationListView(APIView, APIPagination):
         response = self.get_paginated_response(serializer(page, many=True).data)
 
         return response
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            organization = serializer.save(leader=request.user)
+            return Response(
+                self.serializer_class(organization).data, status=status.HTTP_201_CREATED
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrganizationView(APIView):
