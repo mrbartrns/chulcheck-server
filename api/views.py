@@ -75,12 +75,21 @@ class OrganizationListView(APIView, APIPagination):
     def get(self, request):
         serializer = self.serializer_class
 
+        if request.query_params:
+            q = request.query_params.get("q", None)
+            queryset = Organization.objects.filter(name__contains=q)
+
+            return Response(
+                serializer(queryset, many=True).data, status=status.HTTP_200_OK
+            )
+        # page = self.paginate_queryset(data, request, view=self)
+
         data = get_list_or_404(Organization)
-        page = self.paginate_queryset(data, request, view=self)
 
-        response = self.get_paginated_response(serializer(page, many=True).data)
+        # response = self.get_paginated_response(serializer(page, many=True).data)
 
-        return response
+        # return response
+        return Response(serializer(data, many=True).data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
