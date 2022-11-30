@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -52,6 +52,18 @@ class AttendanceView(APIView):
                 self.serializer_class(data).data, status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrganizationListView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    serializer_class = OrganizationSerializer
+
+    def get(self, request):
+        serializer = self.serializer_class
+        data = get_list_or_404(Organization)
+
+        return Response(serializer(data, many=True).data, status=status.HTTP_200_OK)
 
 
 class OrganizationView(APIView):
