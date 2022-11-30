@@ -78,6 +78,8 @@ class OrganizationListView(APIView, APIPagination):
 
         if serializer.is_valid():
             organization = serializer.save(leader=request.user)
+            # leader로 임명함과 동시에 멤버에 추가한다.
+            organization.members.add(request.user)
             return Response(
                 self.serializer_class(organization).data, status=status.HTTP_201_CREATED
             )
@@ -99,3 +101,25 @@ class OrganizationView(APIView):
         serializer = self.serializer_class
         data = get_object_or_404(Organization, id=id)
         return Response(serializer(data).data, status=status.HTTP_200_OK)
+
+
+class OrganizationUserView(APIView):
+    """
+    Organization 멤버 조회 view
+    Organization 멤버 추가 view
+    """
+
+    permission_class = [IsAuthenticated]
+    authentication_classes = [BearerTokenAuthentication]
+    serializer_class = OrganizationSerializer
+
+    # user 추가하기. 이미 user가 있다면 추가 X
+    def put(self, request, id):
+        data = get_object_or_404(Organization, id=id)
+        user = request.user
+        # print(data.members.all())
+
+        data.members.add(user)
+        user.save()
+        serializer = self.serializer_class(instance=data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
