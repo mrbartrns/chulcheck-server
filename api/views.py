@@ -140,3 +140,16 @@ class OrganizationUserView(APIView):
         data.save()
         serializer = self.serializer_class(instance=data)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OrganizationJoinedView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BearerTokenAuthentication]
+    serializer_class = OrganizationSerializer
+
+    def get(self, request):
+        data = Organization.objects.filter(members=request.user)
+
+        return Response(
+            self.serializer_class(data, many=True).data, status=status.HTTP_200_OK
+        )
