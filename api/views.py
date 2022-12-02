@@ -135,9 +135,8 @@ class OrganizationUserView(APIView):
     def put(self, request, id):
         data = get_object_or_404(Organization, id=id)
         user = request.user
-        # print(data.members.all())
 
         data.members.add(user)
-        user.save()
+        data.save()
         serializer = self.serializer_class(instance=data)
         return Response(serializer.data, status=status.HTTP_200_OK)
