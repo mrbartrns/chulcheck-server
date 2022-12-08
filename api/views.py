@@ -58,27 +58,20 @@ class AttendanceListView(APIView):
 class AttendanceView(APIView):
     """
     출석 정보의 get(list)과 post를 담당하는 view 입니다.
-    TODO - 출석 시 출석 아이디로 정보를 얻어오는 view로 바꾸기
+    본인의 출석 정보에 대해서만 검색이 가능합니다.
     """
 
     permission_classes = [IsAuthenticated]
     authentication_classes = [BearerTokenAuthentication]
     serializer_class = AttendenceSerializer
+    model = Attendance
 
-    def get(self, request, month):
+    def get(self, request, id):
         user = request.user
 
-        if month < 0 or month > 12:
-            return Response(
-                {
-                    "message": "month must be greater than 0 and smaller than or equal to 12."
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        data = Attendance.objects.filter(timestamp__month=month, user=user)
-        return Response(
-            self.serializer_class(data, many=True).data, status=status.HTTP_200_OK
-        )
+        data = get_object_or_404(self.model, user=user, id=id)
+
+        return Response(self.serializer_class(data).data, status=status.HTTP_200_OK)
 
 
 class OrganizationListView(APIView, APIPagination):

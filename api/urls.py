@@ -11,7 +11,7 @@ from .views import (
 
 urlpatterns = [
     path("attendance", AttendanceListView.as_view()),
-    path("attendance/<int:month>", AttendanceView.as_view()),
+    path("attendance/<int:id>", AttendanceView.as_view()),
     path("organizations/joined", OrganizationJoinedView.as_view()),
     path("organizations", OrganizationListView.as_view()),
     path("organizations/<int:id>", OrganizationView.as_view()),
